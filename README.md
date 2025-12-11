@@ -64,14 +64,7 @@ npm install
 cp .env.example .env
 ```
 
-4. Add your API credentials to the `.env` file:
-```
-WEATHER_API_KEY=your_api_key_here
-WEATHER_API_BASE_URL=https://api.weatherprovider.com
-CACHE_TTL=3600
-```
-
-5. Start the development server:
+4. Start the development server:
 ```bash
 npm run start:dev
 ```
@@ -110,18 +103,6 @@ GET /weather/coordinates?lat={latitude}&lon={longitude}
 **Parameters:**
 - `lat` (required): Latitude
 - `lon` (required): Longitude
-
-## 🔧 Configuration
-
-### Environment Variables
-
-| Variable | Description | Required | Default |
-|----------|-------------|----------|---------|
-| `WEATHER_API_KEY` | API key for the weather service | Yes | - |
-| `WEATHER_API_BASE_URL` | Base URL for the weather API | Yes | - |
-| `PORT` | Server port | No | 3000 |
-| `CACHE_TTL` | Cache time-to-live in seconds | No | 3600 |
-| `CACHE_TYPE` | Cache type (memory/redis) | No | memory |
 
 ## 🧪 Testing
 
@@ -162,19 +143,8 @@ Weather_API/
 - Validate and sanitize all user inputs
 - Keep dependencies up to date
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
 ## 🙏 Acknowledgments
 
 - Weather data provided by 3rd party weather APIs
 - Built with [NestJS](https://nestjs.com/)
 
-## 📞 Support
-
-For questions or issues, please open an issue on GitHub.
