@@ -50,7 +50,7 @@ This project helps you understand:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/Donghan5/Weather_API.git
+git clone <repository-url>
 cd Weather_API
 ```
 
