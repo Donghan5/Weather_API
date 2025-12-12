@@ -37,7 +37,7 @@ func (s *WeatherService) GetWeather(city string) (map[string]interface{}, error)
 		return data, nil
 	}
 
-	fmt.Println("Cache miss fetching from API for city:", city)
+	fmt.Println("Cache miss. Fetching from API for city:", city)
 
 	apiKey := os.Getenv("WEATHER_API_KEY")
 	baseUrl := os.Getenv("WEATHER_API_BASE_URL")
@@ -51,7 +51,7 @@ func (s *WeatherService) GetWeather(city string) (map[string]interface{}, error)
 
 	defer resp.Body.Close()
 
-	body, _ := ioutil.ReadAll(resp.Body)
+	body, _ := io.ReadAll(resp.Body)
 
 	s.Redis.Set(ctx, cacheKey, body, 43200*time.Second)
 

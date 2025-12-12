@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"strings"
@@ -21,10 +22,16 @@ func connectRedis() *redis.Client {
 		Addr: os.Getenv("REDIS_HOST") + ":" + os.Getenv("REDIS_PORT"),
 	})
 
+	log.Println("Send the ping to check the connection...")
+	if err := rdb.Ping(context.Background()).Err(); err != nil {
+		log.Fatalf("Could not connect to Redis: %v", err)
+	} else {
+		log.Println("Connected to Redis successfully!")
+	}
 	return rdb
 }
 
-func setupRoutes(app *fiber.App, rdb *redis.Client) {
+func setupRoutes(app *fiber.App, service *WeatherService) {
 	app.Get("/weather", func(c *fiber.Ctx) error {
 		city := c.Query("city")
 
@@ -34,8 +41,9 @@ func setupRoutes(app *fiber.App, rdb *redis.Client) {
 			})
 		}
 
-		data, err := getWeatherData(strings.ToLower(city))
+		data, err := service.GetWeather(strings.ToLower(city))
 		if err != nil {
+			log.Println("Error fetching weather data:", err)
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": "Failed to fetch weather data",
 			})
@@ -49,11 +57,12 @@ func main() {
 	loadEnv()
 	rdb := connectRedis()
 	app := fiber.New()
-	setupRoutes(app, rdb)
+	service := NewWeatherService(rdb)
+	setupRoutes(app, service)
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "3000"
+		port = "8080"
 	}
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen(":" + port))
 }
