@@ -25,6 +25,8 @@ export class WeatherService {
 			const apiKey = this.configService.get('WEATHER_API_KEY');
 			const baseUrl = this.configService.get('WEATHER_API_BASE_URL');
 
+			console.log(`Debug -> API key: ${apiKey}, Base URL: ${baseUrl}`);
+			
 			const response = await axios.get(`${baseUrl}/${city}`, {
 				params: {
 					key: apiKey,
@@ -42,7 +44,7 @@ export class WeatherService {
 			);
 			return weatherData;
 		} catch (error) {
-			console.error(`Error details: ${error.message}`);
+			console.error(`Error details: ${(error as Error).message}`);
 			
 			throw new HttpException('Failed to fetch weather data', HttpStatus.INTERNAL_SERVER_ERROR);
 		}
