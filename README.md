@@ -89,9 +89,9 @@ You can run either the NestJS server or the Go server. Since they operate on dif
 #### 🟢 Option A: Run NestJS Server (Port: 3000)
 
 ```bash
-cd nestjs-server
+cd nestjs-server/src
 npm install
-npm run start:dev
+npm run start
 ```
 
 Server URL: `http://localhost:3000`
