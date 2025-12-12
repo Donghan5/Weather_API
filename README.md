@@ -1,150 +1,160 @@
-# Weather API
+# 🌦️ Weather API (NestJS & Go Implementation)
 
-A weather API service built with NestJS that fetches and returns weather data from 3rd party APIs. This project demonstrates best practices for working with external APIs, implementing caching strategies, and managing environment variables in a production-ready application.
+This project is a Weather API service implemented using two different backend frameworks: **NestJS (Node.js)** and **Go (Fiber)**.
+It retrieves real-time weather data from an external API and utilizes **Redis** for caching to minimize redundant external API calls and optimize response times.
 
 ## 📋 Project Overview
 
-Instead of maintaining our own weather data, this API acts as an intelligent intermediary that:
-- Fetches real-time weather data from reliable 3rd party weather services
-- Implements caching to improve performance and reduce API calls
-- Provides a clean, consistent API interface for weather data retrieval
-- Manages API keys and sensitive data through environment variables
+This project was designed to demonstrate and compare how identical business logic (Caching, External API integration) is implemented across two different technology stacks.
 
-This project is an excellent learning resource for understanding how to integrate and work with external APIs in a professional Node.js application.
+### Key Features
 
-## 🎯 Learning Objectives
+- **Real-time Weather Data**: Retrieves current weather information for a specified city.
+- **Smart Caching (Redis)**:
+  - Checks if data for the requested city exists in the Redis cache.
+  - **Cache Hit**: Returns the stored data immediately (High Performance).
+  - **Cache Miss**: Fetches fresh data from the external API, returns it to the user, and saves it to Redis (with TTL).
+- **Dual Implementation**:
+  - **nestjs-server**: Built with TypeScript, NestJS, Axios, and ioredis.
+  - **go-server**: Built with Go, Fiber, and Go-Redis.
 
-This project helps you understand:
+## 🛠️ Tech Stack
 
-1. **3rd Party API Integration**: How to properly consume external APIs, handle responses, and manage errors
-2. **Caching Strategies**: Implementing efficient caching to reduce API costs and improve response times
-3. **Environment Variables**: Secure management of API keys and configuration settings
-4. **Error Handling**: Robust error handling for external API failures and edge cases
-5. **API Design**: Creating a clean, RESTful API interface
+| Component | Technology |
+| :--- | :--- |
+| **Backend 1** | NestJS (Node.js framework) |
+| **Backend 2** | Go (Fiber framework) |
+| **Database** | Redis (Dockerized) |
+| **External API** | WeatherAPI (or compatible provider) |
 
-## ✨ Features
+## 📂 Project Structure
 
-- **Real-time Weather Data**: Fetch current weather information for any location
-- **Intelligent Caching**: Reduce redundant API calls with smart caching mechanisms
-- **Environment Configuration**: Secure management of API keys and settings
-- **Error Handling**: Comprehensive error handling and meaningful error messages
-- **RESTful API**: Clean, intuitive API endpoints
-- **Type Safety**: Built with TypeScript for enhanced code quality
-
-## 🛠️ Technologies
-
-- **[NestJS](https://nestjs.com/)**: Progressive Node.js framework for building efficient server-side applications
-- **TypeScript**: For type-safe code
-- **3rd Party Weather API**: Integration with external weather data providers
-- **Caching**: In-memory or Redis caching for performance optimization
+```bash
+Weather_API/
+├── .env.example           # Environment variables example
+├── excute_redis.sh        # Script to start Redis Docker container
+├── nestjs-server/         # NestJS Implementation source code
+│   ├── src/
+│   │   ├── weather/       # Weather Logic (Controller/Service)
+│   │   └── redis/         # Redis Module
+│   └── ...
+└── go-server/             # Go Implementation source code
+    ├── src/
+    │   ├── main.go        # Entry point & Routes
+    │   ├── service.go     # Business Logic
+    │   └── models.go      # Data Structures
+    └── go_init_env.sh     # Go module initialization script
+```
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 1. Prerequisites
 
-- Node.js (v14 or higher)
-- npm or yarn
-- API key from a weather data provider (e.g., OpenWeatherMap, WeatherAPI, etc.)
+- **Docker** (Required for Redis)
+- **Node.js** (v14 or higher) & **npm**
+- **Go** (v1.22 or higher)
+- **API Key** from a weather data provider (e.g., [WeatherAPI](https://www.weatherapi.com/))
 
-### Installation
+### 2. Environment Configuration
 
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd Weather_API
-```
+Copy the `.env.example` file to create a `.env` file in the root directory and fill in your API key.
 
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up environment variables:
 ```bash
 cp .env.example .env
 ```
 
-4. Start the development server:
+Edit the `.env` file:
+
+```dotenv
+WEATHER_API_BASE_URL=https://api.weatherapi.com/v1/current.json
+WEATHER_API_KEY=YOUR_API_KEY_HERE
+REDIS_HOST=localhost
+REDIS_PORT=6379
+```
+
+### 3. Start Redis
+
+Use the included script to launch the Redis container.
+
 ```bash
+./excute_redis.sh
+```
+
+> **Note**: Ensure Docker is running before executing the script.
+
+### 4. Running the Servers
+
+You can run either the NestJS server or the Go server. Since they operate on different ports, you can also run them simultaneously.
+
+#### 🟢 Option A: Run NestJS Server (Port: 3000)
+
+```bash
+cd nestjs-server
+npm install
 npm run start:dev
 ```
 
-The API will be available at `http://localhost:3000`
+Server URL: `http://localhost:3000`
 
-## 📡 API Endpoints
+#### 🔵 Option B: Run Go Server (Port: 8080)
 
-### Get Current Weather
+```bash
+cd go-server
+# Initialize Go modules (Run once)
+./go_init_env.sh
 
+# Run the server
+cd src
+go run .
 ```
-GET /weather?city={city_name}
-```
 
-**Parameters:**
-- `city` (required): Name of the city
+Server URL: `http://localhost:8080`
 
-**Response:**
+## 🧪 How to Test
+
+You can test the API using a web browser, Postman, or curl.
+
+### 📡 API Endpoint
+
+`GET /weather?city={cityname}`
+
+### 1. Browser Testing
+
+- **NestJS Server** (Port 3000):
+  [http://localhost:3000/weather?city=Seoul](http://localhost:3000/weather?city=Seoul)
+
+- **Go Server** (Port 8080):
+  [http://localhost:8080/weather?city=London](http://localhost:8080/weather?city=London)
+
+### 2. Example Response (JSON)
+
+On a successful request, you will receive a JSON response similar to this:
+
 ```json
 {
-  "city": "London",
-  "temperature": 15,
-  "description": "Partly cloudy",
-  "humidity": 65,
-  "windSpeed": 12,
-  "timestamp": "2024-01-01T12:00:00Z"
+  "location": {
+    "name": "London",
+    "country": "United Kingdom",
+    "lat": 51.52,
+    "lon": -0.11
+  },
+  "current": {
+    "temp_c": 15.0,
+    "condition": {
+      "text": "Partly cloudy",
+      "icon": "//cdn.weatherapi.com/weather/64x64/day/116.png"
+    }
+  }
 }
 ```
 
-### Get Weather by Coordinates
+### 3. Verifying Cache Behavior
 
-```
-GET /weather/coordinates?lat={latitude}&lon={longitude}
-```
+Check the server logs (terminal output) to verify caching:
 
-**Parameters:**
-- `lat` (required): Latitude
-- `lon` (required): Longitude
+1.  **First Request**: `Cache Miss. Fetching from API...` (Data fetched from external API)
+2.  **Second Request**: `Cache hit for...` (Data fetched from Redis, significantly faster)
 
-## 🧪 Testing
+## 📝 License
 
-Run the test suite:
-```bash
-# Unit tests
-npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
-```
-
-## 📚 Project Structure
-
-```
-Weather_API/
-├── src/
-│   ├── weather/           # Weather module
-│   │   ├── weather.controller.ts
-│   │   ├── weather.service.ts
-│   │   └── weather.module.ts
-│   ├── cache/             # Caching module
-│   ├── config/            # Configuration files
-│   └── main.ts            # Application entry point
-├── test/                  # Test files
-├── .env.example          # Example environment variables
-└── README.md             # Project documentation
-```
-
-## 🔐 Security Best Practices
-
-- Never commit `.env` files or API keys to version control
-- Use environment variables for all sensitive data
-- Implement rate limiting to prevent API abuse
-- Validate and sanitize all user inputs
-- Keep dependencies up to date
-
-## 🙏 Acknowledgments
-
-- Weather data provided by 3rd party weather APIs
-- Built with [NestJS](https://nestjs.com/)
-
+This project is for educational purposes.
